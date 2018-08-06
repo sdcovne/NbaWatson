@@ -1,1 +1,1 @@
-web: python3 app.py $PORT
+web: gunicorn gettingstarted.wsgi
