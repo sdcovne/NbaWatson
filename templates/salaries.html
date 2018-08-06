@@ -1,0 +1,126 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+
+
+<main role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <div class="container">
+          <h2 class="display-4.5">SALARIES</h2>
+        </div>
+        <div class = "container">
+        </div>
+
+      </div>
+
+
+
+
+      <div class = "container" >
+
+        <h2> 1 = $1 million </h2>
+      	<h3 style="color:blue;">Player Option</h3>
+      	<h5><small>These players have option in the final year of their contract. If they exercised it, they stay with their team one more year. If they declined it, they become free agents.</small></h5>
+      	<h3 style="color:red;">Team Option</h3>
+      	<h5><small>In this case, the teams can decide. If they exercise the team option, they keep the player for another year. If they decline it, they allow him to become a free agent.</small></h5>
+
+      	<h4></h4>
+
+      	
+      	<h3 style="color:purple;">Two-Way Contract</h3>
+      	<h5><small>This type of contract allows players to go between NBA roster and G League during the Regular Season.</small></h5>
+      	<h3 style="color:green;">Qualifying Offer</h3>
+      	<h5><small>Restricted free agency allows the team to match any offer the player receives from another team. But in order to have that right, the team must have issue the player a qualifying offer. If a qualifying offer isn't issued, that player is an unrestricted free agent.
+
+</small></h5>
+      	</div>
+
+      	<br>
+      	<br>
+
+
+<div class = "container">
+      <div class = "table">
+      <table class="table table-striped" id ='salaries_table'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col"> Name </th>
+      <th scope="col">2018-19</th>
+      <th scope="col">2019-20</th>
+      <th scope="col">2020-21</th>
+      <th scope="col">2021-22</th>
+      <th scope="col">2022-23</th>
+    </tr>
+  </thead>
+  <tbody>
+  	{% for row in rows %}
+    <tr>
+      <th scope="row">{{rows.index(row) + 1 }}</th>
+      <td><a href="/player/{{urlz(row['name'])}}">{{row['name']}}</a></td>
+      {% if row['salary_2018_type'] == "two_way_contract"%}
+      	<td  style="color:purple;">{{round(int(row['salary_2018'])/1000000,1)}}</td>
+      {% else %}
+      	<td >{{round(int(row['salary_2018'])/1000000,1)}}</td>
+      {% endif %}
+      {% if row['salary_2019_type'] == "player_option"%}
+      	<td style="color:blue;">{{round(int(row['salary_2019'])/1000000,1)}}</td>
+      {% elif row['salary_2019_type'] =="team_option"%}
+      	 <td style="color:red;">{{round(int(row['salary_2019'])/1000000,1)}}</td>
+      {% elif row['salary_2019_type'] =="qualifying_option"%}
+      	<td style="color:green;">{{round(int(row['salary_2019'])/1000000,1)}}</td>
+      {% else %}
+      	<td >{{round(int(row['salary_2019'])/1000000,1)}}</td>
+      	{% endif %}
+
+
+	{% if row['salary_2020_type'] == "player_option"%}
+      	<td style="color:blue;">{{round(int(row['salary_2020'])/1000000,1)}}</td>
+      {% elif row['salary_2020_type'] =="team_option"%}
+      	 <td style="color:red;">{{round(int(row['salary_2020'])/1000000,1)}}</td>
+      {% elif row['salary_2020_type'] =="qualifying_option"%}
+      	<td style="color:green;">{{round(int(row['salary_2020'])/1000000,1)}}</td>
+      {% else %}
+      	<td >{{round(int(row['salary_2020'])/1000000,1)}}</td>
+      	{% endif %}
+
+      	{% if row['salary_2021_type'] == "player_option"%}
+      	<td style="color:blue;">{{round(int(row['salary_2021'])/1000000,1)}}</td>
+      {% elif row['salary_2021_type'] =="team_option"%}
+      	 <td style="color:red;">{{round(int(row['salary_2021'])/1000000,1)}}</td>
+      {% elif row['salary_2021_type'] =="qualifying_option"%}
+      	<td style="color:green;">{{round(int(row['salary_2021'])/1000000,1)}}</td>
+      {% else %}
+      	<td >{{round(int(row['salary_2021'])/1000000,1)}}</td>
+      	{% endif %}
+
+
+      	{% if row['salary_2022_type'] == "player_option"%}
+      	<td style="color:blue;">{{round(int(row['salary_2022'])/1000000,1)}}</td>
+      {% elif row['salary_2022_type'] =="team_option"%}
+      	 <td style="color:red;">{{round(int(row['salary_2023'])/1000000,1)}}</td>
+      {% elif row['salary_2022_type'] =="qualifying_option"%}
+      	<td style="color:green;">{{round(int(row['salary_2022'])/1000000,1)}}</td>
+      {% else %}
+      	<td >{{round(int(row['salary_2022'])/1000000,1)}}</td>
+      	{% endif %}
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+      
+
+
+
+
+
+{% endblock %}

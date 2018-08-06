@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+
+
+{% block body %}
+
+<main role="main">
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <div class="container">
+          <h2 class="display-4.5">NEWS</h2>
+        </div>
+         <div class = "container">
+          <p class="font-weight-light"> Those news are sourced using <a href="https://newsapi.org"/> News API </a>.</p>
+        </div>
+      </div>
+
+
+      <div class="container">
+
+
+     {% for news_row in news %}
+      <div class="row mb-2">
+        <div class="col-md-6">
+          <div class="card flex-md-row mb-4 box-shadow h-md-250">
+            <div class="card-body d-flex flex-column align-items-start">
+              <strong class="d-inline-block mb-2 text-primary">News</strong>
+              <h3 class="mb-0">
+                <a class="text-dark" href={{news_row[0]['url']}}>{{news_row[0]['title']}}</a>
+              </h3>
+              <div class="mb-1 text-muted">{{news_row[0]['data']}}</div>
+              <p class="card-text mb-auto">{{news_row[0]['description']}}</p>
+              <br>
+              <h6>{{news_row[0]['source']}}</h6>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="col-md-6">
+          <div class="card flex-md-row mb-4 box-shadow h-md-250">
+            <div class="card-body d-flex flex-column align-items-start">
+              <strong class="d-inline-block mb-2 text-primary">News</strong>
+              <h3 class="mb-0">
+                <a class="text-dark" href={{news_row[1]['url']}}>{{news_row[1]['title']}}</a>
+              </h3>
+              <div class="mb-1 text-muted">{{news_row[1]['data']}}</div>
+              <p class="card-text mb-auto">{{news_row[1]['description']}}</p>
+             <br>
+              <h6>{{news_row[0]['source']}}</h6>
+          </div>
+        </div>
+      </div>
+    </div> 
+      {% endfor %}
+
+        
+      </div>
+        
+   
+    
+    
+
+
+    
+{% endblock %}

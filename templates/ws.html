@@ -1,0 +1,77 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+
+
+
+
+
+<main role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <div class="container">
+          <h2 class="display-4.5">WIN SHARES</h2>
+        </div>
+        <div class = "container">
+        	<p class="font-weight-light"> Win Shares (WS) is a metric that estimates the number of win a player produces for his team during the entire season. WS could be also negative: it means that a player played so bad during the season that he was essentially detrimental for his team. Basically WS is calculated summing together Offensive Win Shares (OWS) and Defensive WIn Shares (DWS) which respectively estimate the offensive and defensive impact of a player. The calculation needed to get OWS and DWS are quite complicate but if you want to know more about it, check <a href="https://www.basketball-reference.com/about/ws.html">this </a>page on <a href = "https://www.basketball-reference.com">basketball-reference </a>.</p>
+        </div>
+
+      </div>
+
+
+      <br>
+
+      <div><h2> Season: {{season}} </h2></div>
+
+      <br>
+
+	      <div class="dropdown">
+	  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+	    Season
+	  </button>
+	  <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+	    <a class="dropdown-item" href="/ws">2017-18</a>
+      <a class="dropdown-item" href="/ws_2017">2016-17</a>
+      <a class="dropdown-item" href="/ws_2016">2015-16</a>
+      <a class="dropdown-item" href="/ws_2015">2014-15</a>
+      <a class="dropdown-item" href="/ws_2014">2013-14</a>
+
+	  </div>
+	</div>
+
+  <br>
+  <br>
+
+<div class="container">
+
+	<div class = "table">
+      <table class="table table-striped" id ='ws_table'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col"> Name </th>
+      <th scope="col">WS</th>
+      <th scope="col">OWS</th>
+      <th scope="col">DWS</th>
+      <th scope="col">WS/48</th>
+    </tr>
+  </thead>
+  <tbody>
+  	{% for row in rows %}
+    <tr>
+      <th scope="row">{{rows.index(row) + 1 }}</th>
+      <td>{{row['name']}}</a></td>
+      <td>{{row['ws']}}</td>
+      <td>{{row['ows']}}</td>
+      <td>{{row['dws']}}</td>
+      <td>{{row['ws_48']}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+
+{% endblock %}

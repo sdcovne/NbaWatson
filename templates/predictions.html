@@ -1,0 +1,187 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<main role="main">
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <div class="container">
+          <h1 class="display-4.5">WS Forecast</h1>
+        </div>
+      </div>
+
+      <div class="container">
+
+      <p  style="font-size:120%;">Our forecast is made with simple statistical tools, therefore is not precise and thus is not reliable for professional use.</p>
+
+      <p  style="font-size:120%;">First of all, for every player in our database, we collected their WS for every regular season since 2013.</p>
+
+      <p  style="font-size:120%;"> Let's consider for instance Kyrie Irving, for him we had a sample of data like this: </p>
+
+      <table class="table table-borderless table-sm" width="10">
+  <thead>
+    <tr>
+      <th scope="col">Season</th>
+      <th scope="col">WS</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2017-18</td>
+      <td>8.9</td>
+    </tr>
+    <tr>
+      <td>2016-17</td>
+      <td>8.9</td>
+    </tr>
+    <tr>
+      <td>2015-16</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>2014-15</td>
+      <td>10.4</td>
+    </tr>
+    <tr>
+      <td>2013-14</td>
+      <td>6.7</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<p  style="font-size:120%;"> So we plotted those data</p>
+
+<div class = "container">
+<canvas id = "ex1" style="width: 128px; height: 64px" ></canvas>
+</div>
+
+<br>
+
+<p  style="font-size:120%;"> Then we draw the best-fit line with the least squares method</p>
+
+<p  style="font-size:120%;"> The least squares method help us find a linear correlation between in the data that we plotted. It consists in drawing a line of equation $$ y = Ax + B $$ for which is minimun the sum of the distances of every point from the line. A e B can be calculated using the following formulas
+
+$$ A= {\overline{xy} - \overline{x} \cdot \overline{y}  \over { \overline{x^2} - \overline{x}^2}} $$
+
+$$ B = {\overline{x^2}\overline{y} - \overline{x} \cdot\overline{xy} \over { \overline{x^2} - \overline{x}^2}} $$ </p>
+
+
+where $$\overline{y}$$ is the mean of the y values
+<div class = "container">
+<canvas id = "ex2" style="width: 128px; height: 64px" ></canvas>
+</div>
+
+<br>
+
+<p  style="font-size:120%;">The prevision p for the following season is calculated using the formula
+y = Ax + B,  for the next x value. In Kyrie Irving's case
+A = 0.29 and B = 7.4, so p = 8.85.</p>
+
+<p  style="font-size:120%;">That's obviously not an accurate prevision and we needed to give at least a certain range of error. Thus we computed the Standard Deviation $$ \sigma = \sqrt{\sum_{i=1}^{N}{(y_i-\overline{y})^2} \over N} $$  
+The numerator is the sum of the squared differences from every y value to the mean while the denominator is just the number of data in the sample. $$\overline{y} = {(8.9+8.9+6.7+10.4+5) \over 5 }= 7.58 $$ 
+
+$$ \sigma = {\sqrt{(8.9-7.58)^2 + (8.9 - 7.58)^2 + (5-7.58)^2 + (10.4 - 7.58)^2) + (6.7 - 7.58)^2 \over 5} } = 1.9$$ </p>
+
+
+<p style="font-size:120%;"> If we assume a Gaussian distribution of probabilty for our prevision outcome, we have
+
+$$ P(p-\sigma; p + \sigma) = 0.68 $$ 
+
+In this case
+
+$$ P(8.85 - 1.9 + 8.85 + 1.9) = P(6.95; 10.75) = 0.68% $$
+
+So (under the previous assumption) we have a 68% chance that Kyrie's WS for the next season will be a value between 6.95 and 10.75.  </p>
+
+<script>
+
+
+  
+var ctx = document.getElementById("ex1").getContext('2d');
+var ws_lr = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ["2013-14", "2014-15", "2015-16", "2016-17", "2017-18"],
+        datasets: [{
+          label: "WS over past RS",
+            fill:false,
+            showLine:false,
+            pointRadius: 5,
+            data: [6.7, 10.4, 5, 8.9, 8.9],
+            borderColor:
+                'rgba(0,0,255,1)',
+            pointBackgroundColor: 'rgba(0,0,255,1)',
+            borderWidth: 1
+
+        }
+
+
+            ]
+    },
+
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+
+var ctx = document.getElementById("ex2").getContext('2d');
+var ws_lr = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ["2013-14", "2014-15", "2015-16", "2016-17", "2017-18"],
+        datasets: [{
+          label: "WS over past RS",
+            fill:false,
+            showLine:false,
+            pointRadius: 5,
+            data: [6.7, 10.4, 5, 8.9, 8.9],
+            borderColor:
+                'rgba(0,0,255,1)',
+            pointBackgroundColor: 'rgba(0,0,255,1)',
+            borderWidth: 1
+
+        }, {
+          label: "Best Fit Line",
+            fill:false,
+            showLine:true,
+            pointRadius: 0,
+            data: [7.4, 7.69, 7.98, 8.27, 8.56],
+            borderColor:
+                'rgba(255,0,0,1)',
+            pointBackgroundColor: 'rgba(0,0,255,1)',
+            borderWidth: 1
+        }
+
+
+            ]
+    },
+
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+
+
+
+</script>
+
+
+
+  </div>
+
+
+
+{% endblock %}

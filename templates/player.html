@@ -1,0 +1,514 @@
+{% extends 'layout.html' %}
+
+
+{% block body %}
+
+
+<script src="//code.jquery.com/jquery.min.js"></script>
+
+<br>
+<br>
+
+	<div class = "row">
+
+		<div col = "md-2">
+			<img class = "pull-right" src={{row['imgUrl']}}>
+		</div>
+
+		<div col = "md-2">
+			{% if row['jersey'] == "" %}
+				<h4 itemprop= "name">{{nor(player_name)}}</h4>
+			{% else %}
+			 	<h4 itemprop= "name">#{{int(row['jersey'])}} {{nor(player_name)}}</h4>
+			{% endif %}
+			<p> <strong> Country: </strong> {{row['country']}} </p>
+			<p> <strong> Position: </strong> {{row['position']}} </p> 
+			<p> <strong> Team/Last Team: </strong> {{row['team_city'] + " " +row['team_name'] + " " + "(" + row['team_abbreviation'] + ")"}}</p>
+
+			<p><strong>Birthdate: </strong>{{row['birthdate'][8:10] + "-" +  row['birthdate'][5:7] + "-" + row['birthdate'][:4]}} <strong> Age: </strong>
+
+			{% if this_month > int(row['birthdate'][5:7]) or (this_month  == int(row['birthdate'][5:7]) and this_day >= int(row['birthdate'][8:10]))%} 
+			{{this_year - int(row['birthdate'][:4])}} years
+			{% else %}
+		 		{{this_year - int(row['birthdate'][:4]) - 1}} years
+			{% endif %}
+
+			</p>
+
+			{% if row['draft_number'] == 'Undrafted' %}
+				<p> <strong> Drafted: </strong> {{this_year - int(row['season_exp']) }} Draft, Undrafted </p>
+
+			{% else %}
+				<p> <strong> Drafted: </strong> {{str(int(row['draft_year'])) + " draft, 	" + str(int(row['draft_number'])) + " overall pick"}}    
+				{% if int(row['draft_round']) ==  2 %}
+					(2nd round, {{int(row['draft_number']) - 30}} pick)
+				{% else %}
+					(1st round, {{int(row['draft_number'])}} pick )
+				{% endif %}
+				</p>
+			{% endif %}
+			<p><strong> Height:</strong> 
+
+
+			 {% if len(row['height']) == 3 %}
+
+				{{row['height']}} ({{ int(int(row['height'][0]) * 30.48 + int(row['height'][2]) * 2.54)}} cm)
+
+			{% else %}
+
+				{{row['height']}} ({{ round(int(row['height'][0]) * 30.48 + int(row['height'][2]) * 10 + int(row['height'][3]) * 2.54, 2)}} cm)
+
+			{% endif %}
+
+			<strong> Weight:</strong> {{row['weight']}} lbs ({{round(int(row['weight']) * 0.45, 2)}} kg)</p>
+
+
+			<p><strong>Exp:</strong> {{int(row['season_exp'])}} years </p>
+
+			<p><strong>College:</strong> {{row['last_affiliation']}}</p>
+		</div>
+
+
+
+    <div class="dropdown">
+        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Select
+        </button>
+
+      <div class="dropdown-menu" id="dropdown-button">
+        <button class="dropdown-item" id="WS">WS</button>
+        <button class="dropdown-item" id="WS/48">WS/48</button>
+        <button class="dropdown-item" id="compareWs">Compare WSs</button>
+        <button class="dropdown-item" id="compareReg">Compare Regressions</button>
+        <button class="dropdown-item" id="compareAll">Compare All</button>
+
+      </div>
+
+
+    </div>
+
+
+    <script>
+        
+        document.getElementById('WS').onclick = function()
+        {
+           $('#WS-col').show()
+           $('#ws_over_year').show();
+           $('#ws_linear_regression').show();
+           $('#ws_48_over_year').hide()
+           $('#ws_48_linear_regression').hide()
+           $("#ws_regression_card").show()
+           $("#ws_48_regression_card").hide()
+        };
+
+        document.getElementById('WS/48').onclick = function()
+        {
+           $('#WS-col').show()
+           $('#ws_over_year').hide();
+           $('#ws_linear_regression').hide();
+           $('#ws_48_over_year').show()
+           $('#ws_48_linear_regression').show()
+           $("#ws_regression_card").hide()
+           $("#ws_48_regression_card").show()
+        };
+
+        document.getElementById('compareWs').onclick = function()
+        {
+           $('#WS-col').show()
+           $('#ws_over_year').show();
+           $('#ws_linear_regression').hide();
+           $('#ws_48_over_year').show()
+           $('#ws_48_linear_regression').hide()
+           $("#ws_regression_card").hide()
+           $("#ws_48_regression_card").hide()
+        };
+
+        document.getElementById('compareReg').onclick = function()
+        {
+           $('#WS-col').show()
+           $('#ws_over_year').hide();
+           $('#ws_linear_regression').show();
+           $('#ws_48_over_year').hide()
+           $('#ws_48_linear_regression').show()
+           $("#ws_regression_card").show()
+           $("#ws_48_regression_card").show()
+
+        };
+
+        document.getElementById('compareAll').onclick = function()
+        {
+           $('#WS-col').show()
+           $('#ws_over_year').show();
+           $('#ws_48_over_year').show()
+           $('#ws_linear_regression').show();
+           $('#ws_48_linear_regression').show()
+           $("#ws_regression_card").show()
+           $("#ws_48_regression_card").show()
+        };
+
+    </script>
+
+
+	<div col = "md-2">
+
+        <canvas id="ws_over_year" width="300" height="200"></canvas>
+
+         <canvas id="ws_48_over_year" width="300" height="200"></canvas>
+
+        
+	</div>
+
+  <div col="md-2">
+
+    <canvas id="ws_linear_regression"  width="300" height="200"></canvas>
+
+        <div class="card" id ="ws_regression_card"  style="width: 18rem;">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">S = {{round(s_ws, 2)}}; R<SUP>2</SUP> = {{round(r_squared_ws,2)}}; &sigma; = {{round(mse_ws,2)}}</li>
+            </ul>
+        </div>
+
+
+        <canvas id = "ws_48_linear_regression"  width="300" height="200" ></canvas>
+
+        <div class="card" id ="ws_48_regression_card"  style="width: 18rem;">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">S = {{round(s_ws_48, 2)}}; R<SUP>2</SUP> = {{round(r_squared_ws_48,2)}}; &sigma; = {{round(mse_ws_48,2)}} </li>
+            </ul>
+        </div>
+  </div>
+
+
+</div>
+
+<div class="dropdown">
+        <button class="btn  dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Select
+        </button>
+
+      <div class="dropdown-menu" id="dropdown-button">
+        <button class="dropdown-item" id="forecast">WS Forecast</button>
+        <button class="dropdown-item" id="pv">Player Value (PV) & Potential PV</button>
+      </div>
+
+
+    </div>
+
+
+
+<script>
+  document.getElementById("forecast").onclick = function()
+  {
+    $('#forecast_row').show();
+    $('#pv_row').hide();
+  }
+  document.getElementById("pv").onclick = function()
+  {
+    $('#forecast_row').hide();
+    $('#pv_row').show();
+  }
+</script>
+
+
+<div class="container ">
+  <div class="row" id="forecast_row" style="display:none">
+    <div col="md-3">
+      <h4> WS Forecast <a href="/predictions">*</a></h4>
+      <div class="card">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"> 2018-19 WS: {{round(prevision_ws,2)}} &plusmn; {{round(mse_ws,2)}}, WS/48: {{round(prevision_ws_48,2)}} &plusmn; {{round(mse_ws_48,2)}},   P:
+                  <span style = "color:#1fc406">68 %</span> </li>
+            </ul>
+             <ul class="list-group list-group-flush">
+                <li class="list-group-item"> 2018-19 WS: {{round(prevision_ws,2)}} &plusmn; {{2 * round(mse_ws,2)}}, WS/48: {{round(prevision_ws_48, 2)}} &plusmn; {{2* round(mse_ws_48,2)}} P:
+                  <span style = "color:#115f05"> 95%</span> </li>
+            </ul>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"> There is a 68% chance that {{nor(player_name)}} will have a WS between  {{round(prevision_ws - mse_ws, 2)}} and {{round(prevision_ws + mse_ws,2)}}  and a WS per 48 minutes between {{round(prevision_ws_48 - mse_ws_48, 2)}} and  {{round(prevision_ws_48 + mse_ws_48,2)}} during the next Regular Season. Furthermore there is a 95% chance that he wil have a WS between {{round(prevision_ws - 2*mse_ws, 2)}} and {{round(prevision_ws + 2*mse_ws, 2)}} and a WS per 48 minutes between
+                {{round(prevision_ws_48 - 2* mse_ws_48, 2)}} and 
+                {{round(prevision_ws_48 + 2* mse_ws_48, 2)}} over the same period. </li>
+            </ul>
+        </div>
+    </div>
+  </div>
+  <div class = "row" id = "pv_row">
+    <div col="md-3">
+      <h4> Player Value and Potential Player Value<a href="/pv">*</a></h4>
+      <div class="card">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"> PV: {{player_value}} </li>
+            </ul>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"> PPV: {{p_player_value}} </li>
+            </ul>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"> Salary: {{salary}}</li>
+            </ul>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"> GAP ( PV - SALARY): {{gap_pv}}</li>
+            </ul>
+             <ul class="list-group list-group-flush">
+                <li class="list-group-item"> PGAP ( PPV - SALARY): {{gap_ppv}}</li>
+            </ul>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"> {{nor(player_name)}} is 
+                  {% if gapPV > 0 %}
+                    <span style = "color:#1fc406"> underpaid. </span> 
+                    He earns <span style = "color:#1fc406">{{gap_pv_pct}}% </span>  less than his value to the team. Furthermore he is
+                      {% if gapPPV > 0 %}
+                        also <span style = "color:#1fc406">underpaid</span>   considering his Potential Player Value. He is paid <span style = "color:#1fc406">{{gap_ppv_pct}}%</span> less respect his potential value to the team 
+                  {% elif gapPPV < 0 %}
+                        <span style = "color:#cc0000">overpaid </span> considering his Potential Player Value. He is paid 
+                        <span style = "color:#cc0000"> {{gap_ppv_pct}}% </span> more than his potential value to the team
+                  {% elif gapPPV == 0 %}
+                        nor overpaid or underpaid considering his Potential Player Value
+                      </li>
+                    {%endif %}
+                  {% else %}
+                    <span style = "color:#cc0000"> overpaid. </span>
+                    He earns <span style = "color:#cc0000"> {{gap_pv_pct}}% </span>
+                    more than his value to the team. Furthemore he is
+                    {% if gapPPV > 0 %}
+                      <span style = "color:#1fc406">underpaid</span>   considering his Potential Player Value. He is paid <span style = "color:#1fc406">{{gap_ppv_pct}}%</span> less respect his potential value to the team
+                    {% else %}
+                    <span style = "color:#cc0000">overpaid </span> also considering his Potential Player Value. He is paid 
+                        <span style = "color:#cc0000"> {{gap_ppv_pct}}% </span> more than his potential value to the team
+                        {% endif %}
+                  {% endif %}</li>
+            </ul>
+        </div>
+    </div>
+  </div>
+
+  </div>
+
+
+
+
+
+
+
+	
+
+
+<script>
+var ctx = document.getElementById("ws_linear_regression").getContext('2d');
+var ws_lr = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for item in labels %}
+                  "{{item}}",
+              {% endfor %}],
+        datasets: [{
+        	label: "linear regression",
+            fill:false,
+            pointRadius:0,
+            data: [{% for item in lr_ws%}
+                      {{item}},
+                    {% endfor %}],
+            borderColor:
+                'rgba(100,0,0,1)',
+            borderWidth: 1
+
+        },  
+
+        {
+        	label: "WS over years",
+            fill:false,
+            showLine:false,
+            pointBackgroundColor: 'rgba(0,0,150,1)',
+            data: [{% for item in ws_over_year%}
+                      {{item}},
+                    {% endfor %}],
+            borderColor:
+                'rgba(0,0,150,0.2)',
+            borderWidth: 1
+
+
+            }
+
+
+            ]
+    },
+
+    options: {
+    	title: {
+            display: true,
+            text: 'Linear Regression for WS over the past RS'
+        },
+
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+
+
+var ctx_1 = document.getElementById("ws_over_year").getContext('2d');
+var ws = new Chart(ctx_1, {
+    type: 'line',
+    data: {
+        labels: [{% for item in labels %}
+                  "{{item}}",
+              {% endfor %}],
+        datasets: [{
+        	label: "WS",
+            data: [{% for item in ws_over_year%}
+                      {{item}},
+                    {% endfor %}],
+            borderColor:
+                'rgba(100,0,0,1)',
+            borderWidth: 1
+
+        }]
+    },
+
+    options: {
+    	title: {
+            display: true,
+            text: 'WS over the past RS'
+        },
+
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+
+var ctx_2 = document.getElementById("ws_48_over_year").getContext('2d');
+var ws_48 = new Chart(ctx_2, {
+    type: 'line',
+    data: {
+        labels: [{% for item in labels %}
+                  "{{item}}",
+              {% endfor %}],
+        datasets: [{
+        	label: "WS/48",
+            data: [{% for item in ws_48_over_year%}
+                      {{item}},
+                    {% endfor %}],
+            borderColor:
+                'rgba(100,0,0,1)',
+            borderWidth: 1
+
+        }]
+    },
+
+    options: {
+    	title: {
+            display: true,
+            text: 'WS/48 minutes the past RS'
+        },
+
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+
+
+var ctx = document.getElementById("ws_48_linear_regression").getContext('2d');
+var ws_48_lr = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for item in labels %}
+                  "{{item}}",
+              {% endfor %}],
+        datasets: [{
+        	label: "linear regression",
+            fill:false,
+            pointRadius:0,
+            data: [{% for item in lr_ws_48%}
+                      {{item}},
+                    {% endfor %}],
+            borderColor:
+                'rgba(100,0,0,1)',
+            borderWidth: 1
+
+        },  
+
+        {
+        	label: "WS/48 over years",
+            fill:false,
+            showLine:false,
+            pointBackgroundColor: 'rgba(0,0,150,1)',
+            data: [{% for item in ws_48_over_year%}
+                      {{item}},
+                    {% endfor %}],
+            borderColor:
+                'rgba(0,0,150,0.2)',
+            borderWidth: 1
+
+
+            }]
+    },
+
+    options: {
+    	title: {
+            display: true,
+            text: 'Linear Regression for WS/48 over the past RS'
+        },
+
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+
+
+</script>
+
+
+<!--
+
+<h4>Salary</h4>
+
+<table class="table table-borderless">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Handle</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td colspan="2">Larry the Bird</td>
+      <td>@twitter</td>
+    </tr>
+  </tbody>
+</table>
+
+-->
+
+{% endblock %}

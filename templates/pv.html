@@ -1,0 +1,134 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<main role="main">
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <div class="container">
+          <h2 class="display-4.5">PLAYER VALUE and POTENTIAL PLAYER VALUE</h2>
+        </div>
+        <div class = "container">
+        	<p class="font-weight-light"> Player Value (PV) is a metric that estimates the economic value of a single player considering his contribution in team's wins. The idea for this metric came after reading 
+
+      <a href="https://www.forbes.com/sites/brettknight/2018/01/23/nbas-most-overpaid-players-2018/#4931d2ea48a2>this article"</a>
+        		written by <a href = "https://twitter.com/wagesofwins"> David Berri </a>.</p>
+        </div>
+        <div class = "container">
+        	<p class="font-weight-light"> Potential Player Value (PPV) instead is a metric that estimates the economic value of a single player considering his potential contribution in team's wins.</p>
+        </div>
+      </div>
+
+
+<br>
+
+ <div class = "container">
+
+      <p>
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+   How were PV and PPV calculated?
+  </button>
+</p>
+<div class="collapse" id="collapseExample">
+  <div class="card card-body">
+    <p>The calculations needed to get this two metrics are quite simple.</p>
+
+
+    <p> First of all, we need to get an estimate of the economic value of a single NBA Regular Season Win, SWV (Single Win Value). </p>
+
+     <p> According to <a href="https://www.forbes.com/sites/bradadgate/2018/04/25/the-2017-18-season-was-great-for-the-nba/#1873a0e62ecb">Forbes</a>
+      the League produced a $7.4 billion in revenue during the last Regular Season. With the current CBA, players receive about 50% of it. So, NBA Players will receive about $3.7 billion. Under the assumption that a team pays players to get wins, we can estimate the Single Win Value (SWV) dividing the amount of money that the players will receive and the number of Regular Season games (1230). </p>
+      <p> So SWS = $3.7 billion / 1230  = $ 0.003 billion = $ 3 million </p>
+
+      <p> PV is nows calculated considering the estimate of wins produced by a player for his team: Win Shares (WS). </p>
+
+      <p> PV = WS * SWS </p>
+
+      <p> Let's take for instance Stephen Curry. During the 2017-18 RS he had a 9.1 WS. So, PV = 9.1 * $ 3 million = $ 27 million</p>
+
+      <p> Sometimes a player can be injured for most of the regular season, so his PV is calculated on a insufficient number of games and therefore can not be trusted. To overcome this problem, we introduced the PPV (Potential Player Value). The PPV is calculated assuming a linear relation between WS and parts played.</p>
+
+      <p> Let's consider again Stephen Curry. During the 2017-18 Regular Season he played 51 games and had a 9.1 WS. Assuming a linear relation  between WS and parts played, what would have been WS if he played all 82 RS games? What is his Potential WS, PWS?
+
+      We can set the proportion: $$ {WS \over GP} = {PWS \over 82} $$
+
+      $$ PWS = {82 WS \over GP} = {82 * 9.1 \over 51 } = 14.6 $$
+
+    </p>
+
+
+    <p> If we know Stephen Curry's PWS, we can calcute his Potential Player Value (PPV). 
+
+    PPV = PWS * SWV = 14.6 * $ 3 million = $ 44 million
+
+
+      </p>
+
+
+    </div>
+
+
+
+
+
+
+  </div>
+
+       	<h4> 1 = $ 1 million</h4>
+       	<p class="font-weight-light"> for example, Stephen Curry's PV value is 27, which is $27 millions</p> 
+       	<p class="font-weight-light"> players actually in FA are not included </p>
+        <p class="font-weight-light"> GAP = PV - SALARY </p>
+        <p class="font-weight-light"> PGAP = PPV - SALARY </p>
+
+
+
+
+
+       
+      <br>
+      <br>
+
+      <div class = "table">
+      <table class="table table-striped" id ='pv_table'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col"> Name </th>
+      <th scope="col">PV</th>
+      <th scope="col">PPV</th>
+      <th scope="col">Salary</th>
+      <th scope="col">GAP</th>
+      <th scope="col">PGAP</th>
+      <th scope="col">GAP %</th>
+      <th scope="col">PGAP %</th>
+      <th scope="col">GP</th>
+
+    </tr>
+  </thead>
+  <tbody>
+  	{% for row in rows %}
+    <tr>
+      <th scope="row">{{rows.index(row) + 1 }}</th>
+      <td><a href="player/{{urlz(row['name'])}}">{{row['name']}}</a></td>
+      <td>{{row['player_value']}}</td>
+      <td>{{row['potential_player_value']}}</td>
+      <td>{{row['salary']}}</td>
+      <td>{{row['gap']}}</td>
+      <td>{{row['pgap']}}</td>
+      <td>{{row['gap_pct']}}</td>
+      <td>{{row['p_gap_pct']}}</td>
+      <td>{{row['gp']}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+
+</div>
+</div>
+
+
+
+
+{% endblock %}
